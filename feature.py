@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import wave
 import librosa
 import glob
 import os
@@ -160,47 +159,8 @@ def extract(target_dir):
     eval_labels_npz = '/feat/eval_labels_' + machine_type + '_' + machine_id + '.npz' 
     np.savez(eval_labels_npz, eval_labels)
 
-
-def visualize(target_dir):
-    machine_type = target_dir.split('/')[-2]
-    machine_id = target_dir.split('/')[-1]
-    print(machine_type + '_' + machine_id)
-    train_data = np.load('/feat/train_files_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    train_labels = np.load('/feat/train_labels_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    eval_data = np.load('/feat/eval_files_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    eval_labels = np.load('/feat/eval_labels_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    len_audio = int(train_data.shape[0]/train_labels.shape[0])
-
-    fig=plt.figure(figsize = (300, 3))
-    plt.imshow(eval_data.T, cmap=plt.cm.jet, aspect = 'auto')
-    ax = plt.gca()
-    ax.invert_yaxis()
-    xticks_value = np.arange(0, eval_data.shape[0], len_audio)
-    xticks_label = np.arange(0, eval_labels.shape[0])
-    plt.xticks(xticks_value, xticks_label)
-
-    plt.show()
-
-def visualize_pp(target_dir):
-    machine_type = target_dir.split('/')[-2]
-    machine_id = target_dir.split('/')[-1]
-    print(machine_type + '_' + machine_id)
-    train_data = np.load('/feat/train_files_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    train_labels = np.load('/feat/train_labels_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    eval_data = np.load('/feat/eval_files_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    eval_labels = np.load('/feat/eval_labels_' + machine_type + '_' + machine_id + '.npz')['arr_0']
-    len_audio = int(train_data.shape[0]/train_labels.shape[0])
-
-    plt.figure(figsize = (15, 3))
-    plt.imshow(eval_data.T, cmap=plt.cm.jet, aspect = 'auto')
-    m = eval_data.shape[0]/2
-    ax = plt.gca()
-    ax.invert_yaxis()
-    plt.plot([m, m], [0, 63], 'r')
-    plt.text(m/2, 31, 'Normal segments', fontsize=16, horizontalalignment='center', verticalalignment='center')
-    plt.text(3*m/2, 31, 'Anomalous segments', fontsize=16, horizontalalignment='center', verticalalignment='center')
-    plt.xlabel('Segment')
-    plt.ylabel('MFB')
-    plt.title(machine_type + ' ' + machine_id)
-
-    plt.show()
+feat_folder = 'feat/'
+utils.create_folder(feat_folder)
+dirs = sorted(glob.glob(os.path.abspath("{base}/*/*".format(base='MIMII'))))
+for d in dirs:
+    extract(d)
