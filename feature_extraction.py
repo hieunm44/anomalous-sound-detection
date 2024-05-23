@@ -1,8 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import librosa
-import glob
+import sys
 import os
+import glob
+import numpy as np
+import librosa
 from sklearn import preprocessing
 
 
@@ -139,28 +139,31 @@ def dataset_generator(target_dir,
     return train_files, train_labels, eval_files, eval_labels
 
 
-def extract(target_dir):
+def extract(target_dir, feat_folder):
     machine_type = target_dir.split('/')[-2]
     machine_id = target_dir.split('/')[-1]
-    print(machine_type + '/' + machine_id)
+    print(f'{machine_type}/{machine_id}')
 
     train_files, train_labels, eval_files, eval_labels = dataset_generator(target_dir)
     train_data = list_to_vector_array(train_files)
     scaler = preprocessing.MinMaxScaler()
     train_data = scaler.fit_transform(train_data)
-    train_files_npz = '/feat/train_files_' + machine_type + '_' + machine_id + '.npz'
+    train_files_npz = f'{feat_folder}/train_files_{machine_type}_{machine_id }.npz'
     np.savez(train_files_npz, train_data)
-    train_labels_npz = '/feat/train_labels_' + machine_type + '_' + machine_id + '.npz'
+    train_labels_npz = f'{feat_folder}/train_labels_{machine_type}_{machine_id}.npz'
     np.savez(train_labels_npz, train_labels)
     eval_data = list_to_vector_array(eval_files) 
     eval_data = scaler.transform(eval_data)
-    eval_files_npz = '/feat/eval_files_' + machine_type + '_' + machine_id + '.npz'
+    eval_files_npz = f'{feat_folder}/eval_files_{machine_type}_{machine_id}.npz'
     np.savez(eval_files_npz, eval_data) 
-    eval_labels_npz = '/feat/eval_labels_' + machine_type + '_' + machine_id + '.npz' 
+    eval_labels_npz = f'{feat_folder}/eval_labels_{machine_type}_{machine_id}.npz' 
     np.savez(eval_labels_npz, eval_labels)
 
-feat_folder = 'feat/'
-utils.create_folder(feat_folder)
-dirs = sorted(glob.glob(os.path.abspath("{base}/*/*".format(base='MIMII'))))
-for d in dirs:
-    extract(d)
+
+if __name__ == '__main__':
+    audio_folder = 'MIMII/'
+    feat_folder = 'feat/'
+    dirs = sorted(glob.glob(os.path.abspath(f'{audio_folder}/*/*')))
+    
+    for d in dirs:
+        extract(d, feat_folder)

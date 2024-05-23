@@ -1,12 +1,10 @@
-import os
 import numpy as np
 
-eps = np.finfo(np.float).eps
+eps = np.finfo(float).eps
 
 
-def create_folder(_fold_path):
-    if not os.path.exists(_fold_path):
-        os.makedirs(_fold_path)
+def reshape_3Dto2D(A):
+    return A.reshape(A.shape[0] * A.shape[1], A.shape[2])
 
 
 def split_multi_channels(data, num_channels):
